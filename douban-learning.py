@@ -26,9 +26,19 @@ def crawl(url):
     data = []
 
     #爬取
+    html = ""
+    html_out = open("base_url.html", "wt")
+    html_out.write(html)
+    html_out.close()
+    print("Crawling:")
     for i in range(10):
-        html = askURL(url+str(25*i))
-        # 解析数据
+        html += askURL(url+str(25*i))
+        print(str((i+1)*10) + "%")
+
+    # 解析数据
+    soup = BeautifulSoup(html, "html.parser")
+    for item in soup.find_all():     #find_all()查找符合要求的字符串，形成列表
+        
 
 
 
@@ -56,7 +66,8 @@ def askURL(url):
         if hasattr(e,"reason"):
             print(e.reason)
 
-    html_out = open("base_url.html", "w")
+
+    html_out = open("base_url.html", "at")
     html_out.write(html)
     html_out.close()
 
