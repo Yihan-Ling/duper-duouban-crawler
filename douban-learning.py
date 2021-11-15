@@ -21,6 +21,14 @@ def main():
     #testing
 
 
+# 全局变量
+findLink = re.compile(r'<a href="(.*?)">')     #影片详情连接的正则表达式
+findImage = re.compile(r'<img.*src="(.*?)"', re.S)  #re.S忽律换行符
+findTitle = re.compile(r'<span class="title">(.*?)</span>')
+findRating = re.compile(r'<span class="rating_num" property="v:average">(.*?)</span>')
+findInq = re.compile(r'<span class="inq">(.*?)</span>')
+
+
 # 爬取网页
 def crawl(url):
     data = []
@@ -37,9 +45,25 @@ def crawl(url):
 
     # 解析数据
     soup = BeautifulSoup(html, "html.parser")
-    for item in soup.find_all():     #find_all()查找符合要求的字符串，形成列表
-        
+    for item in soup.find_all('div', class_="item"):     #find_all()查找符合要求的字符串，形成列表
+        data = []   #保存一部电影的所有信息
+        item = str(item)
 
+        link = re.findall(findLink, item)[0]     #正则表达式
+        data.append(link)
+        print(link)
+        imgSrc = re.findall(findImage, item)[0]
+        data.append(imgSrc)
+        print(imgSrc)
+        title = re.findall(findTitle, item)[0]
+        data.append(title)
+        print(title)
+        rating = re.findall(findRating, item)[0]
+        data.append(rating)
+        print(rating)
+        inq = re.findall(findInq,item)[0]
+        data.append(inq)
+        print(inq)
 
 
     return data
