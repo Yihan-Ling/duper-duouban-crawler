@@ -15,8 +15,8 @@ def main():
 
     #2.保存数据
     # output_file_path="douban_out.xls"
-    output_file_path = ".\\douban_out.xls"
-    save_data(output_file_path)
+    output_file_path = "douban_out.xls"
+    save_data(data_list, output_file_path)
 
     #testing
 
@@ -31,7 +31,7 @@ findInq = re.compile(r'<span class="inq">(.*?)</span>')
 
 # 爬取网页
 def crawl(url):
-    data = []
+    datalist = []
 
     #爬取
     html = ""
@@ -51,22 +51,32 @@ def crawl(url):
 
         link = re.findall(findLink, item)[0]     #正则表达式
         data.append(link)
-        print(link)
+
         imgSrc = re.findall(findImage, item)[0]
         data.append(imgSrc)
-        print(imgSrc)
-        title = re.findall(findTitle, item)[0]
-        data.append(title)
-        print(title)
+
+        title = re.findall(findTitle, item)     #片名有中文和外文
+        if(len(title) == 2):
+            ctitle = title[0]
+            data.append(ctitle)
+            ftitle = title[1].replace("/", "")
+            data.append(ftitle)
+        else:
+            data.append(title[0])
+            data.append(" ")    #外国名留空
+
         rating = re.findall(findRating, item)[0]
         data.append(rating)
-        print(rating)
-        inq = re.findall(findInq,item)[0]
-        data.append(inq)
-        print(inq)
 
+        inq = re.findall(findInq,item)
+        if(len(inq) != 0):
+            data.append(inq)
+        else:
+            data.append(" ")
 
-    return data
+        datalist.append(data)
+    print(datalist)
+    return datalist
 
 
 #得到指定一个网页的信息
@@ -100,8 +110,22 @@ def askURL(url):
 
 
 # 保存数据
-def save_data(save_path):
-
+def save_data(datalist, save_path):
+    print("Saving to: "+ save_path)
+    book = xlwt.Workbook(encoding="utf-8", style_compression=0)
+    sheet = book.add_sheet("豆瓣电影_Top250", cell_overwrite_ok=True)
+    sheet.write(0, 0, "helloo")
+    col = ("电影详情链接", "图片链接", "影片中文名", "影片外文名", "影片评分", "概况")
+    for i in range(len(col)):
+        sheet.write(0,i,col[i])
+    for i in range(250):
+        if((i/250*100)%5==0):
+            print(str((i/250*100))+"%")
+        data = datalist[i]
+        for j in range(len(col)):
+            sheet.write(i+1, j, data[j])
+    book.save(save_path)
+    print("Saved")
     return None
 
 
